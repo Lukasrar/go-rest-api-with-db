@@ -68,7 +68,14 @@ func updateEvent(context *gin.Context) {
 		return
 	}
 
-	_, errGetEvent := models.GetEventById(eventId)
+	event, errGetEvent := models.GetEventById(eventId)
+
+	requestUserId := context.GetInt64("userId")
+
+	if event.UserID != requestUserId {
+		context.JSON(http.StatusUnauthorized, err)
+		return
+	}
 
 	if errGetEvent != nil {
 		context.JSON(http.StatusInternalServerError, err)
