@@ -90,3 +90,44 @@ func GetAllEvents() ([]Event, error) {
 
 	return events, nil
 }
+
+func (e Event) UpdateEvent() error {
+
+	query := `
+		UPDATE events
+		SET name = ?, description = ?, location = ?, dateTime = ?
+		WHERE id = ?
+	`
+
+	stmt, err := db.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, errExec := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.ID)
+
+	return errExec
+
+}
+
+func (e Event) DeleteEvent() error {
+	query := `
+		DELETE FROM events WHERE id = ?
+	`
+
+	stmt, err := db.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, errorExec := stmt.Exec(e.ID)
+
+	return errorExec
+
+}
