@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"lukasrar/go-rest-api-with-db/db"
 	"lukasrar/go-rest-api-with-db/utils"
 )
@@ -73,4 +74,28 @@ func GetUsers() ([]User, error) {
 	}
 
 	return users, nil
+}
+
+func (u User) ValidateCredentials() error {
+
+	query := `
+		SELECT password FROM users WHERE email = ?
+	`
+
+	row := db.DB.QueryRow(query, u.Email)
+
+	var retrievedPass string
+
+	err := row.Scan(&retrievedPass)
+	if err != nil {
+		return errors.New("Credentials invalid")
+	}
+
+	passIsValid := utils.CheckPassword(u.Password, retrievedPass)
+
+	if !passIsValid {
+		return errors.New("Credentials invalid")
+	}
+
+	return nil
 }
