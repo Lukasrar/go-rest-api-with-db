@@ -2,6 +2,7 @@ package routes
 
 import (
 	"lukasrar/go-rest-api-with-db/models"
+	"lukasrar/go-rest-api-with-db/utils"
 	"net/http"
 	"strconv"
 
@@ -19,6 +20,21 @@ func getEvents(context *gin.Context) {
 }
 
 func createEvent(context *gin.Context) {
+
+	token := context.Request.Header.Get("Authorization")
+
+	if token == "" {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
+	userId, errToken := utils.ValidateToken(token)
+
+	if errToken != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
 	var event models.Event
 	err := context.ShouldBindJSON(&event)
 
@@ -27,8 +43,7 @@ func createEvent(context *gin.Context) {
 		return
 	}
 
-	event.ID = 1
-	event.UserID = 1
+	event.UserID = userId
 
 	errSave := event.Save()
 
