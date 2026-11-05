@@ -2,6 +2,7 @@ package routes
 
 import (
 	"lukasrar/go-rest-api-with-db/models"
+	"lukasrar/go-rest-api-with-db/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -51,12 +52,19 @@ func login(context *gin.Context) {
 		return
 	}
 
-	err = user.ValidateCredentials()
+	errValidateCred := user.ValidateCredentials()
 
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+	if errValidateCred != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": errValidateCred.Error()})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"message": "sucess"})
+	token, errToken := utils.GenerateToken(user.Email, user.ID)
+
+	if errToken != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": errToken.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "sucess", "token": token})
 }
