@@ -13,6 +13,14 @@ authentication, and event registrations.
 - Register authenticated users for events and cancel registrations.
 - Create the SQLite database and tables automatically at startup.
 
+## Technologies Used
+
+- **Go (Golang)** — programming language.
+- **Gin** — HTTP web framework for routing and handling requests.
+- **SQLite** — database, accessed through `database/sql` and the `go-sqlite3` driver.
+- **JWT** — token-based authentication with `golang-jwt/jwt`.
+- **bcrypt** — password hashing with `golang.org/x/crypto/bcrypt`.
+
 ## Requirements
 
 - Go 1.27.3 or later (as declared in `go.mod`).
